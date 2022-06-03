@@ -1,24 +1,38 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import { Box } from "@mui/material";
+import Header from "./components/Header";
+import Main from "./components/Main/Main";
+import { useEffect, useState } from "react";
 
 function App() {
+  const [rates, setRates] = useState({});
+  var myHeaders = new Headers();
+  myHeaders.append("apikey", "UqseeEHiUybGMuK0DHakIlxN7eXVeMss");
+  var requestOptions = {
+    method: "GET",
+    redirect: "follow",
+    headers: myHeaders,
+  };
+
+  useEffect(() => {
+    fetch(
+      "https://api.apilayer.com/exchangerates_data/latest?symbols=USD,EUR&base=UAH",
+      requestOptions
+    )
+      .then((response) => response.text())
+      .then((result) => {
+        console.log(result);
+        result = JSON.parse(result);
+        setRates(result.rates);
+      })
+      .catch((error) => console.log("error", error));
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Box className="App">
+      <Header rates={rates} />
+      <Main />
+    </Box>
   );
 }
 
